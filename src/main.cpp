@@ -64,9 +64,14 @@ int main(int argc, char *argv[]){
 			break;
 
 		editFrame = frame.clone();
+        // Converting the image from CV_8U to CV_64 because CV_8U
+        // can not have negative values which leads to error in 
+        // computing distance for an Intensity values lying on left 
+        // side of an gaussian
 		editFrame.convertTo(editFrame,CV_64F);
 
-//		#pragma omp parallel for
+        // for trying to imporve performance 
+		#pragma omp parallel for
 		for(int i = 0; i < frame.rows; i++)
 			for (int j=0; j<frame.cols; j++)
 				updatePixel(editFrame.at<Vec3d>(i,j), frameStrut[i][j], MaxGaussians);
@@ -76,6 +81,8 @@ int main(int argc, char *argv[]){
 
 		imshow("Original_Video", frame);
 		imshow("Edited_Video", editFrame);
+
+        // Detecting if key 'q' is pressed to make an exit
 		if(waitKey(1) == 113)
 			break;
 	}
